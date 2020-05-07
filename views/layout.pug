@@ -1,7 +1,19 @@
 doctype html
+mixin navElement(name, url)
+  li
+    a(href=url class=`${path == url ? 'active ' : ''}link`)=name
+
 html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
+    
+    nav
+      ul
+        +navElement('Main page', '/')
+        +navElement('Topics', '/topics')
+        +navElement('Quiz', '/quiz')
+        +navElement('Admin', '/admin')
+
     block content
