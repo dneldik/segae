@@ -1,4 +1,5 @@
 var createError = require('http-errors');
+var cookieSession = require('cookie-session');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -8,6 +9,7 @@ var indexRouter = require('./routes/index');
 var topicsRouter = require('./routes/topics');
 var quizRouter = require('./routes/quiz');
 var adminRouter = require('./routes/admin');
+var cookie = require('./cookie.config');
 
 var app = express();
 
@@ -25,6 +27,12 @@ app.use(function (req, res, next) {
   res.locals.path = req.path;
   next();
 });
+
+app.use(cookieSession({
+  name: cookie.name,
+  keys: cookie.keys,
+  maxAge: cookie.maxAge
+}));
 
 app.use('/', indexRouter);
 app.use('/topics', topicsRouter);
