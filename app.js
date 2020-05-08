@@ -1,17 +1,17 @@
-var createError = require('http-errors');
-var cookieSession = require('cookie-session');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const cookieSession = require('cookie-session');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var topicsRouter = require('./routes/topics');
-var quizRouter = require('./routes/quiz');
-var adminRouter = require('./routes/admin');
-var cookie = require('./cookie.config');
+const indexRouter = require('./routes/index');
+const topicsRouter = require('./routes/topics');
+const quizRouter = require('./routes/quiz');
+const adminRouter = require('./routes/admin');
+const config = require('./config');
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -29,9 +29,9 @@ app.use(function (req, res, next) {
 });
 
 app.use(cookieSession({
-  name: cookie.name,
-  keys: cookie.keys,
-  maxAge: cookie.maxAge
+  name: config.cookie.name,
+  keys: config.cookie.keys,
+  maxAge: config.cookie.maxAge
 }));
 
 app.use('/', indexRouter);
