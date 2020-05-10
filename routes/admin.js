@@ -6,6 +6,17 @@ const config = require('../config');
 
 const router = express.Router();
 
+const setDbConnection = (path) => {
+  mongoose.connect(config.connectToDatabase(path), {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
+  const db = mongoose.connection;
+  db.on('error', console.error.bind(console, 'connection error:'));
+  db.once('open', () => { console.log('connected'); });
+  return db
+};
+
 router.all('*', (req, res, next) => {
   if (!req.session.admin) res.redirect('/login');
   else next();
@@ -14,38 +25,68 @@ router.all('*', (req, res, next) => {
 /* GET admin page. */
 router.get('/', (req, res) => {
 
-  /**
-   * Saving data to the database before rendering, only for testing purposes.
-   */
+  const db = setDbConnection('segae_data');
 
-  mongoose.connect(config.connectToDatabase('segae_data'), {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+  Language.find({}, (err, data) => {
+    if (err) {
+      db.close(() => { console.log('Data loading error, disconnected'); });
+      res.render('admin/index', { title: 'Admin' });
+    }
+    else {
+      db.close(() => { console.log('disconnected'); });
+      res.render('admin/index', { title: 'Admin', data });
+    }
   });
 
-  const db = mongoose.connection;
-  db.on('error', console.error.bind(console, 'connection error:'));
-  db.once('open', () => {
-    console.log('connected')
-  });
+});
 
-  const languageData = new Language();
+/* GET send page. */
+router.get('/send', (req, res) => {
+  res.render('admin/add-content', { title: 'Add new article', body: {} });
+});
 
-  languageData.title = 'JavaScript';
-  languageData.author = 'dneldik';
-  languageData.body = 'This is the best programming language. :)';
-  languageData.hidden = false;
+/* POST send page. */
+router.post('/send', (req, res) => {
+
+  const languageData = new Language(req.body);
+  req.body.hidden ? languageData.hidden = true : languageData.hidden = false;
+
+  const errors = languageData.validateSync();
+  const db = setDbConnection('segae_data');
 
   languageData.save(err => {
-    const dataSaved = 'data saved';
-    const dataError = 'Something went wrong, nothing was saved to the database.';
-    console.log(`${err ? dataError : dataSaved}`);
-    db.close(() => {
-      console.log('disconnected');
-    });
+
+    if (err) {
+      res.render('admin/add-content', { title: 'Add new article', errors, body: req.body });
+      console.log('Something went wrong, nothing was saved to the database.');
+    } else {
+      res.redirect('/admin');
+      console.log('data saved');
+    }
+    db.close(() => { console.log('disconnected'); });
+
   });
 
-  res.render('admin', { title: 'Admin' });
+});
+
+/* GET admin page. */
+router.get('/delete/:id', (req, res) => {
+
+  const db = setDbConnection('segae_data');
+
+  Language.findByIdAndDelete(req.params.id, (err) => {
+
+    if (err) {
+      res.render('admin/index', { title: 'Admin' });
+      console.log('unable to delete data');
+    } else {
+      res.redirect('/admin');
+      console.log('data deleted');
+    }
+    db.close(() => { console.log('disconnected'); });
+
+  });
+
 });
 
 module.exports = router;

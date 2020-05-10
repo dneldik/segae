@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+  h1=title
+  p Welcome to #{title}
+
+  a(href='/admin/send')='add new article'
+  br
+
+  h2='Current Articles'
+
+  table
+    tr
+      th id
+      th title
+      th date
+      th action
+    
+    each item, index in data
+      tr
+        td=index+1
+        td=item.title
+        td=item.date
+        td
+          a(href=`/admin/delete/${item._id}`)='delete'
+ 
+  br
+  br
+  a(href='/logout')='logout'
+
+  

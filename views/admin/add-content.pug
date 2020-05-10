@@ -1,0 +1,35 @@
+extends ../layout
+
+block content
+  h2=title
+  form(method='post')
+
+    label='Title of the article:'
+      br
+      input(type='text' name='title' value=body.title || '')
+      if errors && errors.errors.title
+        span(class='validation')=errors.errors.title.message
+    br
+
+    label='Your name:'
+      br
+      input(type='text' name='author' value=body.author || '')
+      if errors && errors.errors.author
+        span(class='validation')=errors.errors.author.message
+    br
+
+    label='Content of the article:'
+      br
+      textarea(name='body' rows='7' cols='50')=body.body || ''
+    br
+
+    label='publish'
+      input(type='checkbox' name='hidden')
+    br
+    br
+
+    input(type='submit')
+    br
+    br
+
+  a(href='/logout')='logout'

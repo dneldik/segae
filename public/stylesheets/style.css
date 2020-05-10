@@ -10,3 +10,7 @@ a {
 .active {
   font-weight: bold;
 }
+
+.validation {
+  color: red;
+}
