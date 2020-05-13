@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const userLogin = 'admin';
-const userPassword = 'admin1'
+const userPassword = 'admin1';
 
 /* GET home page. */
 router.get('/', (req, res) => {
-  res.render('index', { title: 'Our website' });
+  res.render('index', { title: 'Programming ' });
 });
 
 /* GET login page. */
@@ -22,11 +22,11 @@ router.post('/login', (req, res) => {
   if (login === userLogin && password === userPassword) {
     console.log('\nlogged in');
     req.session.admin = true;
-    res.redirect('/admin')
+    res.redirect('/admin');
   }
   else {
     console.log('\nwrong');
-    res.redirect('/login')
+    res.redirect('/login');
   }
 
 });

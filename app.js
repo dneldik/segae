@@ -4,14 +4,28 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const mongoose = require('mongoose');
 
 const indexRouter = require('./routes/index');
-const topicsRouter = require('./routes/topics');
+const articlesRouter = require('./routes/articles');
 const quizRouter = require('./routes/quiz');
 const adminRouter = require('./routes/admin');
 const config = require('./config');
 
 const app = express();
+
+// database connection setting
+mongoose.connect(config.connectToDatabase('segae_data'), {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  keepAlive: true,
+  keepAliveInitialDelay: 300000
+});
+const db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.on('disconnected', console.log.bind(console, '\nconnected\n'));
+db.once('open', () => { console.log('\nconnected\n'); });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,7 +49,7 @@ app.use(cookieSession({
 }));
 
 app.use('/', indexRouter);
-app.use('/topics', topicsRouter);
+app.use('/topics', articlesRouter);
 app.use('/quiz', quizRouter);
 app.use('/admin', adminRouter);
 

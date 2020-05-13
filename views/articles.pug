@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1=title
+
+  form(method='get')
+    input(type='text' name='find' value=inputValue)
+    input(type='submit' value='find')
+  
+  each item, index in data
+    h4=item.title
+    p=item.body
+    br

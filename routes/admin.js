@@ -1,21 +1,7 @@
 const express = require('express');
-const mongoose = require('mongoose');
-
-const Language = require('../models/languages');
-const config = require('../config');
+const Articles = require('../models/articles');
 
 const router = express.Router();
-
-const setDbConnection = (path) => {
-  mongoose.connect(config.connectToDatabase(path), {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
-  const db = mongoose.connection;
-  db.on('error', console.error.bind(console, 'connection error:'));
-  db.once('open', () => { console.log('connected'); });
-  return db
-};
 
 router.all('*', (req, res, next) => {
   if (!req.session.admin) res.redirect('/login');
@@ -25,17 +11,12 @@ router.all('*', (req, res, next) => {
 /* GET admin page. */
 router.get('/', (req, res) => {
 
-  const db = setDbConnection('segae_data');
-
-  Language.find({}, (err, data) => {
+  Articles.find({}, (err, data) => {
     if (err) {
-      db.close(() => { console.log('Data loading error, disconnected'); });
       res.render('admin/index', { title: 'Admin' });
+      return;
     }
-    else {
-      db.close(() => { console.log('disconnected'); });
-      res.render('admin/index', { title: 'Admin', data });
-    }
+    res.render('admin/index', { title: 'Admin', data });
   });
 
 });
@@ -48,13 +29,12 @@ router.get('/send', (req, res) => {
 /* POST send page. */
 router.post('/send', (req, res) => {
 
-  const languageData = new Language(req.body);
-  req.body.hidden ? languageData.hidden = true : languageData.hidden = false;
+  const articlesData = new Articles(req.body);
+  req.body.hidden ? articlesData.hidden = true : articlesData.hidden = false;
 
-  const errors = languageData.validateSync();
-  const db = setDbConnection('segae_data');
+  const errors = articlesData.validateSync();
 
-  languageData.save(err => {
+  articlesData.save(err => {
 
     if (err) {
       res.render('admin/add-content', { title: 'Add new article', errors, body: req.body });
@@ -63,7 +43,6 @@ router.post('/send', (req, res) => {
       res.redirect('/admin');
       console.log('data saved');
     }
-    db.close(() => { console.log('disconnected'); });
 
   });
 
@@ -72,9 +51,7 @@ router.post('/send', (req, res) => {
 /* GET admin page. */
 router.get('/delete/:id', (req, res) => {
 
-  const db = setDbConnection('segae_data');
-
-  Language.findByIdAndDelete(req.params.id, (err) => {
+  Articles.findByIdAndDelete(req.params.id, (err) => {
 
     if (err) {
       res.render('admin/index', { title: 'Admin' });
@@ -83,7 +60,6 @@ router.get('/delete/:id', (req, res) => {
       res.redirect('/admin');
       console.log('data deleted');
     }
-    db.close(() => { console.log('disconnected'); });
 
   });
 
