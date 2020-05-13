@@ -33,7 +33,7 @@ router.post('/login', (req, res) => {
 
 /* logout */
 router.get('/logout', (req, res) => {
-  if (req.session.admin) req.session = null;
+  if (req.session.admin) req.session.admin = null;
   res.redirect('/login');
 });
 
