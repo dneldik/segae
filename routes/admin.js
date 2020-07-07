@@ -11,12 +11,20 @@ router.all('*', (req, res, next) => {
 /* GET admin page. */
 router.get('/', (req, res) => {
 
+  const dateFormat = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  };
   Articles.find({}, (err, data) => {
     if (err) {
       res.render('admin/index', { title: 'Admin' });
       return;
     }
-    res.render('admin/index', { title: 'Admin', data });
+    res.render('admin/index', { title: 'Admin', data, dateFormat });
   });
 
 });
@@ -29,9 +37,11 @@ router.get('/send', (req, res) => {
 /* POST send page. */
 router.post('/send', (req, res) => {
 
-  const articlesData = new Articles(req.body);
-  req.body.hidden ? articlesData.hidden = true : articlesData.hidden = false;
+  const lines = req.body.body.split("\n");
+  req.body.body = lines;
 
+  const articlesData = new Articles(req.body);
+  req.body.show ? articlesData.show = true : articlesData.show = false;
   const errors = articlesData.validateSync();
 
   articlesData.save(err => {

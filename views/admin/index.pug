@@ -14,13 +14,15 @@ block content
       th id
       th title
       th date
+      th visibility
       th action
     
     each item, index in data
       tr
         td=index+1
         td=item.title
-        td=item.date
+        td=item.date.toLocaleString('en-US', dateFormat)
+        td=item.show ? 'yes' : 'no'
         td
           a(href=`/admin/delete/${item._id}`)='delete'
  

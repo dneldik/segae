@@ -8,6 +8,8 @@ block content
     input(type='submit' value='find')
   
   each item, index in data
-    h4=item.title
-    p=item.body
-    br
+    if(item.show)
+      h4=item.title
+      each paragraph, parIndex in item.body
+        p!=paragraph
+      br
