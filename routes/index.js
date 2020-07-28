@@ -1,8 +1,6 @@
+const Users = require('../models/users');
 const express = require('express');
 const router = express.Router();
-
-const userLogin = 'admin';
-const userPassword = 'admin1';
 
 /* GET home page. */
 router.get('/', (req, res) => {
@@ -19,15 +17,27 @@ router.post('/login', (req, res) => {
 
   const { login, password } = req.body;
 
-  if (login === userLogin && password === userPassword) {
-    console.log('\nlogged in');
-    req.session.admin = true;
-    res.redirect('/admin');
-  }
-  else {
-    console.log('\nwrong');
-    res.redirect('/login');
-  }
+  Users.findOne({ user: login }, (err, user) => {
+
+    let userLogin = undefined;
+    let userPassword = undefined;
+
+    if (user !== null) {
+      userLogin = user.user;
+      userPassword = user.password;
+    }
+
+    if (login === userLogin && password === userPassword) {
+      console.log('\nlogged in');
+      req.session.admin = true;
+      res.redirect('/admin');
+    }
+    else {
+      console.log('\nwrong');
+      res.redirect('/login');
+    }
+
+  });
 
 });
 
