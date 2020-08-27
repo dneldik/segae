@@ -1,13 +1,12 @@
 extends ../layout
 
 block content
-  h1=title
-  p Welcome to #{title}
+  h1 Welcome #{user}
 
-  a(href='/admin/send')='add new article'
+  a(href='/user/send')='add new article'
   br
 
-  h2='Current Articles'
+  h2=(user==='Admin') ? 'All articles' : 'Your articles'
 
   table
     tr
@@ -24,7 +23,7 @@ block content
         td=item.date.toLocaleString('en-US', dateFormat)
         td=item.show ? 'yes' : 'no'
         td
-          a(href=`/admin/delete/${item._id}`)='delete'
+          a(href=`/user/delete/${item._id}`)='delete'
  
   br
   br

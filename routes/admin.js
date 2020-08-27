@@ -4,12 +4,14 @@ const Articles = require('../models/articles');
 const router = express.Router();
 
 router.all('*', (req, res, next) => {
-  if (!req.session.admin) res.redirect('/login');
+  if (!req.session.user) res.redirect('/login');
   else next();
 });
 
 /* GET admin page. */
 router.get('/', (req, res) => {
+
+  const userName = req.session.user;
 
   const dateFormat = {
     year: 'numeric',
@@ -19,19 +21,32 @@ router.get('/', (req, res) => {
     minute: '2-digit',
     hour12: false
   };
-  Articles.find({}, (err, data) => {
-    if (err) {
-      res.render('admin/index', { title: 'Admin' });
-      return;
-    }
-    res.render('admin/index', { title: 'Admin', data, dateFormat });
-  });
+  if (userName === 'Admin') {
+    Articles.find({}, (err, data) => {
+      if (err) {
+        res.render('admin/index', { user: 'Admin', data: {} });
+        return;
+      }
+      res.render('admin/index', { user: 'Admin', data, dateFormat });
+    });
+  }
+  else {
+    Articles.find({ author: userName }, (err, data) => {
+      if (err) {
+        res.render('admin/index', { user: userName, data: {} });
+        return;
+      }
+      res.render('admin/index', { user: userName, data, dateFormat });
+    });
+  }
+
 
 });
 
 /* GET send page. */
 router.get('/send', (req, res) => {
-  res.render('admin/add-content', { title: 'Add new article', body: {} });
+  const user = req.session.user;
+  res.render('admin/add-content', { title: 'Add new article', user, body: {} });
 });
 
 /* POST send page. */
@@ -50,7 +65,7 @@ router.post('/send', (req, res) => {
       res.render('admin/add-content', { title: 'Add new article', errors, body: req.body });
       console.log('Something went wrong, nothing was saved to the database.');
     } else {
-      res.redirect('/admin');
+      res.redirect('/user');
       console.log('data saved');
     }
 
@@ -63,11 +78,13 @@ router.get('/delete/:id', (req, res) => {
 
   Articles.findByIdAndDelete(req.params.id, (err) => {
 
+    const userName = req.session.user;
+
     if (err) {
-      res.render('admin/index', { title: 'Admin' });
+      res.render('admin/index', { user: userName, data: {} });
       console.log('unable to delete data');
     } else {
-      res.redirect('/admin');
+      res.redirect('/user');
       console.log('data deleted');
     }
 

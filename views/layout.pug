@@ -1,19 +1,21 @@
 doctype html
+- var link = user ? 'My account' : 'Sign in'
 mixin navElement(name, url)
+  - var condition = (path==url) || (path=='/login' && url=='/user') || (path=='/user/send' && url=='/user')
   li
-    a(href=url class=`${path == url ? 'active ' : ''}link`)=name
+    a(href=url class=`${condition ? 'active ' : ''}link`)=name
 
 html
   head
-    title=title
+    title=title || 'Article administration'
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     
     nav
       ul
         +navElement('Main page', '/')
-        +navElement('Articles', '/topics')
+        +navElement('Articles', '/articles')
         +navElement('Quiz', '/quiz')
-        +navElement('Admin', '/admin')
+        +navElement(link, '/user')
 
     block content

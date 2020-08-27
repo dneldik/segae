@@ -4,12 +4,13 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', (req, res) => {
-  res.render('index', { title: 'Programming ' });
+  const user = req.session.user;
+  res.render('index', { title: 'Programming ', user });
 });
 
 /* GET login page. */
 router.get('/login', (req, res) => {
-  if (req.session.admin) res.redirect('/admin');
+  if (req.session.user) res.redirect('/user');
   else res.render('login', { title: 'sign in' });
 });
 
@@ -29,8 +30,8 @@ router.post('/login', (req, res) => {
 
     if (login === userLogin && password === userPassword) {
       console.log('\nlogged in');
-      req.session.admin = true;
-      res.redirect('/admin');
+      req.session.user = userLogin;
+      res.redirect('/user');
     }
     else {
       console.log('\nwrong');
@@ -43,7 +44,7 @@ router.post('/login', (req, res) => {
 
 /* logout */
 router.get('/logout', (req, res) => {
-  if (req.session.admin) req.session.admin = null;
+  if (req.session.user) req.session.user = null;
   res.redirect('/login');
 });
 

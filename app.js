@@ -50,9 +50,9 @@ app.use(cookieSession({
 }));
 
 app.use('/', indexRouter);
-app.use('/topics', articlesRouter);
+app.use('/articles', articlesRouter);
 app.use('/quiz', quizRouter);
-app.use('/admin', adminRouter);
+app.use('/user', adminRouter);
 app.use('/api', apiRouter);
 
 // catch 404 and forward to error handler
