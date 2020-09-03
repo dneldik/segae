@@ -12,6 +12,9 @@ router.all('*', (req, res, next) => {
 router.get('/', (req, res) => {
 
   const userName = req.session.user;
+  const admin = req.session.admin;
+
+  const searchBy = admin ? {} : { author: userName };
 
   const dateFormat = {
     year: 'numeric',
@@ -21,25 +24,14 @@ router.get('/', (req, res) => {
     minute: '2-digit',
     hour12: false
   };
-  if (userName === 'Admin') {
-    Articles.find({}, (err, data) => {
-      if (err) {
-        res.render('admin/index', { user: 'Admin', data: {} });
-        return;
-      }
-      res.render('admin/index', { user: 'Admin', data, dateFormat });
-    });
-  }
-  else {
-    Articles.find({ author: userName }, (err, data) => {
-      if (err) {
-        res.render('admin/index', { user: userName, data: {} });
-        return;
-      }
-      res.render('admin/index', { user: userName, data, dateFormat });
-    });
-  }
 
+  Articles.find(searchBy, (err, data) => {
+    if (err) {
+      res.render('admin/index', { user: userName, data: {} });
+      return;
+    }
+    res.render('admin/index', { user: userName, data, dateFormat });
+  });
 
 });
 

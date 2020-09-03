@@ -16,7 +16,7 @@ const config = require('./config');
 const app = express();
 
 // database connection setting
-mongoose.connect(config.connectToDatabase('segae_data'), {
+mongoose.connect(config.connectToDatabase(), {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   keepAlive: true,

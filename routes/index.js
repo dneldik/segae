@@ -31,6 +31,7 @@ router.post('/login', (req, res) => {
     if (login === userLogin && password === userPassword) {
       console.log('\nlogged in');
       req.session.user = userLogin;
+      req.session.admin = user.admin;
       res.redirect('/user');
     }
     else {
